@@ -1,0 +1,66 @@
+{
+    "name": "MiniCartImgExt",
+    "fantasyName": "Mini Cart Image Ext",
+    "vendor": "Kodella",
+    "version": "1.0.0",
+    "type": "extension",
+    "target": "SCA",
+    "description": "Mini cart image sourced from custom fields",
+    "skins": [],
+    "assets": {
+        "img": {
+            "files": []
+        },
+        "fonts": {
+            "files": []
+        },
+        "services": {
+            "files": []
+        }
+    },
+    "sass": {
+        "entry_points": {
+            "shopping": "Modules/MiniCartImageExt/Sass/_minicartimgext-minicartimageext.scss",
+            "myaccount": "Modules/MiniCartImageExt/Sass/_minicartimgext-minicartimageext.scss"
+        },
+        "files": [
+            "Modules/MiniCartImageExt/Sass/_minicartimgext-minicartimageext.scss",
+            "Modules/MiniCartImageExt/Sass/_minicartimageext.scss"
+        ]
+    },
+    "templates": {
+        "application": {
+            "shopping": {
+                "files": [
+                    "Modules/MiniCartImageExt/Template/header_mini_cart_item_cell2.tpl"
+                ]
+            },
+            "myaccount": {
+                "files": [
+                    "Modules/MiniCartImageExt/Template/header_mini_cart_item_cell2.tpl"
+                ]
+            }
+        }
+    },
+    "javascript": {
+        "entry_points": {
+            "shopping": "Modules/MiniCartImageExt/JavaScript/Kodella.MiniCartImgExt.MiniCartImageExt.js",
+            "myaccount": "Modules/MiniCartImageExt/JavaScript/Kodella.MiniCartImgExt.MiniCartImageExt.js"
+        },
+        "application": {
+            "shopping": {
+                "files": [
+                    "Modules/MiniCartImageExt/JavaScript/Kodella.MiniCartImgExt.MiniCartImageExt.js",
+                    "Modules/MiniCartImageExt/JavaScript/MiniCartImageExt.View.js"
+                ]
+            },
+            "myaccount": {
+                "files": [
+                    "Modules/MiniCartImageExt/JavaScript/Kodella.MiniCartImgExt.MiniCartImageExt.js",
+                    "Modules/MiniCartImageExt/JavaScript/MiniCartImageExt.View.js"
+                ]
+            }
+        }
+    },
+    "local_folder": "Workspace\\MiniCartImgExt"
+}

@@ -1,0 +1,44 @@
+{
+    "name": "CartImageExt",
+    "fantasyName": "Cart Image Extension",
+    "vendor": "Kodella",
+    "version": "1.0.0",
+    "type": "extension",
+    "target": "SCA",
+    "description": "Source image in cart page from custom fields",
+    "skins": [],
+    "assets": {
+        "img": {
+            "files": []
+        },
+        "fonts": {
+            "files": []
+        },
+        "services": {
+            "files": []
+        }
+    },
+    "sass": {
+        "entry_points": {
+            "shopping": "Modules/CartImageExt/Sass/_cartimageext-cartimageext.scss"
+        },
+        "files": [
+            "Modules/CartImageExt/Sass/_cartimageext-cartimageext.scss",
+            "Modules/CartImageExt/Sass/_cartimageext.scss"
+        ]
+    },
+    "javascript": {
+        "entry_points": {
+            "shopping": "Modules/CartImageExt/JavaScript/Kodella.CartImageExt.CartImageExt.js"
+        },
+        "application": {
+            "shopping": {
+                "files": [
+                    "Modules/CartImageExt/JavaScript/Kodella.CartImageExt.CartImageExt.js",
+                    "Modules/CartImageExt/JavaScript/CartImageExt.View.js"
+                ]
+            }
+        }
+    },
+    "local_folder": "Workspace\\CartImageExt"
+}

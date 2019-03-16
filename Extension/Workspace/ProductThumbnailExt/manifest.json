@@ -1,0 +1,60 @@
+{
+    "name": "ProductThumbnailExt",
+    "fantasyName": "Product Thumbnail Extension",
+    "vendor": "Kodella",
+    "version": "1.0.0",
+    "type": "extension",
+    "target": "SCA",
+    "description": "Product thumbnail sourced from custom fields",
+    "skins": [],
+    "assets": {
+        "img": {
+            "files": []
+        },
+        "fonts": {
+            "files": []
+        },
+        "services": {
+            "files": []
+        }
+    },
+    "sass": {
+        "entry_points": {
+            "shopping": "Modules/ProductThumbnailExt/Sass/_productthumbnailext-productthumbnailext.scss",
+            "myaccount": "Modules/ProductThumbnailExt/Sass/_productthumbnailext-productthumbnailext.scss",
+            "checkout": "Modules/ProductThumbnailExt/Sass/_productthumbnailext-productthumbnailext.scss"
+        },
+        "files": [
+            "Modules/ProductThumbnailExt/Sass/_productthumbnailext-productthumbnailext.scss",
+            "Modules/ProductThumbnailExt/Sass/_productthumbnailext.scss"
+        ]
+    },
+    "javascript": {
+        "entry_points": {
+            "shopping": "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js",
+            "myaccount": "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js",
+            "checkout": "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js"
+        },
+        "application": {
+            "shopping": {
+                "files": [
+                    "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js",
+                    "Modules/ProductThumbnailExt/JavaScript/ProductThumbnailExt.View.js"
+                ]
+            },
+            "myaccount": {
+                "files": [
+                    "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js",
+                    "Modules/ProductThumbnailExt/JavaScript/ProductThumbnailExt.View.js"
+                ]
+            },
+            "checkout": {
+                "files": [
+                    "Modules/ProductThumbnailExt/JavaScript/Kodella.ProductThumbnailExt.ProductThumbnailExt.js",
+                    "Modules/ProductThumbnailExt/JavaScript/ProductThumbnailExt.View.js"
+                ]
+            }
+        }
+    },
+    "local_folder": "Workspace\\ProductThumbnailExt"
+}

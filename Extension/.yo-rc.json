@@ -1,0 +1,34 @@
+{
+  "generator-extension": {
+    "promptValues": {
+      "vendor": "Kodella",
+      "target": [
+        "SCA"
+      ]
+    },
+    "ext_application": {
+      "CustomProductImages": [
+        "shopping",
+        "myaccount",
+        "checkout"
+      ],
+      "ProductImageExt": [
+        "shopping",
+        "myaccount",
+        "checkout"
+      ],
+      "ProductThumbnailExt": [
+        "shopping",
+        "myaccount",
+        "checkout"
+      ],
+      "CartImageExt": [
+        "shopping"
+      ],
+      "MiniCartImgExt": [
+        "shopping",
+        "myaccount"
+      ]
+    }
+  }
+}

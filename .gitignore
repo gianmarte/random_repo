@@ -1,0 +1,14 @@
+/node_modules/
+/**/node_modules/
+/**/node_modules/*
+/_tools/*
+/**/.DS_Store
+.DS_Store
+/**/DeployDistribution/
+/**/LocalDistribution/
+/**/.nsdeploy/
+/Contents/
+/Core/.nsdeploy
+cap-project-sca.code-workspace
+/**/**/.nsdeploy
+tools

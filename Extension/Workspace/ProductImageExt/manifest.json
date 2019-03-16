@@ -1,0 +1,60 @@
+{
+    "name": "ProductImageExt",
+    "fantasyName": "Product Image Extension",
+    "vendor": "Kodella",
+    "version": "1.0.0",
+    "type": "extension",
+    "target": "SCA",
+    "description": "Images in PDP sourced from custom fields",
+    "skins": [],
+    "assets": {
+        "img": {
+            "files": []
+        },
+        "fonts": {
+            "files": []
+        },
+        "services": {
+            "files": []
+        }
+    },
+    "sass": {
+        "entry_points": {
+            "shopping": "Modules/ProductImageExt/Sass/_productimageext-productimageext.scss",
+            "myaccount": "Modules/ProductImageExt/Sass/_productimageext-productimageext.scss",
+            "checkout": "Modules/ProductImageExt/Sass/_productimageext-productimageext.scss"
+        },
+        "files": [
+            "Modules/ProductImageExt/Sass/_productimageext-productimageext.scss",
+            "Modules/ProductImageExt/Sass/_productimageext.scss"
+        ]
+    },
+    "javascript": {
+        "entry_points": {
+            "shopping": "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js",
+            "myaccount": "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js",
+            "checkout": "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js"
+        },
+        "application": {
+            "shopping": {
+                "files": [
+                    "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js",
+                    "Modules/ProductImageExt/JavaScript/ProductImageExt.PDP.View.js"
+                ]
+            },
+            "myaccount": {
+                "files": [
+                    "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js",
+                    "Modules/ProductImageExt/JavaScript/ProductImageExt.PDP.View.js"
+                ]
+            },
+            "checkout": {
+                "files": [
+                    "Modules/ProductImageExt/JavaScript/Kodella.ProductImageExt.ProductImageExt.js",
+                    "Modules/ProductImageExt/JavaScript/ProductImageExt.PDP.View.js"
+                ]
+            }
+        }
+    },
+    "local_folder": "Workspace\\ProductImageExt"
+}
