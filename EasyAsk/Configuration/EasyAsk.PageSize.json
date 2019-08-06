@@ -1,0 +1,46 @@
+{
+    "subtab": {
+        "id": "easyAskpageSize",
+        "group": "easyAsk",
+        "title": "EasyAsk Page Size",
+        "description": "Number of Items Displayed on a Page"
+    },
+
+    "properties": {
+        "easyAskConfig.pageSize": {
+            "group": "easyAsk",
+            "subtab": "easyAskpageSize",
+            "type": "array",
+            "title": "Page Size",
+            "description": "Number of Products to be displayed on a page",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "integer",
+                        "title": "items",
+                        "description": "Number of items for this result option",
+                        "mandatory": true
+                    },
+                    "isDefault": {
+                        "type": "boolean",
+                        "title": "Is Default",
+                        "description": "Number of items loaded by default"
+                    }
+                }
+            },
+            "default": [
+                {
+                    "items": 24,
+                    "isDefault": true
+                },
+                {
+                    "items": 48
+                },
+                {
+                    "items": 96
+                }
+            ]
+        }
+    }
+}
