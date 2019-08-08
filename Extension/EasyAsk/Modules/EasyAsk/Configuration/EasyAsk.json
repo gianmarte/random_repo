@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "group": {
+        "id": "easyAsk",
+        "title": "EasyAsk Integration",
+        "description": "EasyAsk Integration"
+    },
+    "subtab": {
+        "id": "easyAskConfig",
+        "group": "easyAsk",
+        "title": "EasyAsk Configuration",
+        "description": "EasyAsk settings"
+    },
+    "properties": {
+        "easyAskConfig.server": {
+            "group": "easyAsk",
+            "subtab": "easyAskConfig",
+            "type": "string",
+            "title": "EasyAsk Server",
+            "description": "Enter the URL for the EasyAsk server where the data will be pulled from",
+            "default": "lonestar.prod.easyaskondemand.com"
+        },
+        "easyAskConfig.dct": {
+            "group": "easyAsk",
+            "subtab": "easyAskConfig",
+            "type": "string",
+            "title": "EasyAsk Dictionary",
+            "description": "Enter EasyAsk dictionary",
+            "default": "lonestar"
+        }
+    }
+}
