@@ -34,12 +34,13 @@ define(
 	,	getContext: function ()
 		{
 			var option_items = this.options.options
-            ,	processed_option_items = [];
+			,	processed_option_items = []
+			,	translator = this.options.translator;
 
 			_.each(option_items, function(option_item) {
 				var processed_option_item = {
-					configOptionUrl: ''
-				,	isSelected: option_item.isDefault == true ? true : false
+					configOptionUrl: translator.cloneForOptions({show: option_item.items, page: 1}).getUrl()
+				,	isSelected: parseInt(translator.getOptionValue('show'), 10) === option_item.items
 				,	name: option_item.items
 				,	className: option_item.items
                 };

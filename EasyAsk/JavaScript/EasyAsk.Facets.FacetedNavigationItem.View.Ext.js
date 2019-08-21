@@ -34,17 +34,19 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItem.View.Ext'
 
             template: kodella_facets_faceted_navigation_item_ext_tpl
 
-        ,	initialize: function ()
+        ,	initialize: function (options)
 		    {
-                this.facetId = this.model.get('url') || this.model.get('id');
-                this.facet_config = this.options.translator.getFacetConfig(this.facetId);
+                this.facetId = this.model.get('url') || this.model.get('id');
+				this.facet_config = this.options.translator.getFacetConfig(this.facetId);
+				
+				//console.log("this.facetId", this.facetId);
 
                 //this values is configured in the Configuration File (SCA.Shopping.Configuration)
                 if (this.facet_config.template)
                 {
                     this.template = this.facet_config.template;
                 }
-                this.on('afterViewRender', this.renderFacets, this);
+				this.on('afterViewRender', this.renderFacets, this);
 		    }
 
 		,	getContext: function ()
@@ -66,16 +68,23 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItem.View.Ext'
 				,	show_facet
 				,	show_remove_link
 				// fixes the selected items
-				,	selected_values = this.options.translator.getFacetValue(facet_id) || [];
+				,	selected_values = this.options.selected_facets || [];
 
+				//console.log("this.options", this.options);
+
+				//console.log("this.options.selected_facets", this.options.selected_facets);
 				selected_values = _.isArray(selected_values) ? selected_values : [selected_values];
-                show_remove_link = !!selected_values.length;
-				
+				show_remove_link = !!selected_values.length;
+
+				//console.log("selected_values child view", selected_values);
+		
 				//console.log("this.options", this.options);
 				//console.log("this.model facetnavigationitem,", this.model);
 				// Prepears the values for display
+
+				//console.log("this.model.get('values')", this.model.get('values'));
 				var original_values = _.isArray(this.model.get('values')) ? this.model.get('values') : [this.model.get('values')];
-				
+				//console.log("this.model", this.model);
 				//console.log("original_values", original_values);
 				if (facet_config.behavior !== 'range')
 				{
@@ -83,13 +92,18 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItem.View.Ext'
 					{
 						if (value.url !== '')
 						{
-							value.isActive = _.contains(selected_values, value.url);
+							//console.log("_.contains(selected_values, value.seoPath)", _.contains(selected_values, value.seoPath));
+							//console.log("selected_values", selected_values);
+							//console.log("value", value);
+							value.isActive = _.contains(selected_values, value.nodeString);
 							value.link = value.seoPath; //translator.cloneForFacetId(facet_id, value.url).getUrl();
+							value.ea_href = value.seoPath;
 							value.displayName = value.attributeValue || decodeURIComponent(value.url) || _('(none)').translate();
 							value.color = '';
 							value.isColorTile = false;
 							value.image = {};
 							value.isImageTile = false;
+							value.productCount = value.productCount
 
 							if (facet_config.colors)
 							{
@@ -109,7 +123,7 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItem.View.Ext'
 							values.push(value);
 						}
 					});
-					
+
 					max_items = facet_config.max || values.length;
 					display_values = _.first(values, max_items);
 					_(display_values).each(function(value)
@@ -154,7 +168,7 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItem.View.Ext'
 					//@property {Boolean} isCollapsed
 				,	isCollapsed: !this.facet_config.uncollapsible && this.facet_config.collapsed
 					//@property {Boolean} isMultiSelect
-				,	isMultiSelect: facet_config.behavior === 'multi'
+				,	isMultiSelect: true
 					//@property {Boolean} showRemoveLink
 				,	showRemoveLink: show_remove_link
 					//@property {String} removeLink

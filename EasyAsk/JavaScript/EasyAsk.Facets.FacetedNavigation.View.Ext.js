@@ -47,8 +47,11 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigation.View.Ext'
 				'Facets.FacetedNavigationItems': function()
 				{
 					var translator = this.options.translator //FacetsHelper.parseUrl(this.options.translatorUrl, this.options.translatorConfig, this.options.translator.categoryUrl)
-					,	ordered_facets = this.options.facets;
-	
+					,	ordered_facets = this.options.facets
+					,	selected_facets = [];
+
+					//console.log("ordered_facets", ordered_facets);
+					//console.log("window.location", window.location);
 					//if prices aren't to be shown we take out price related facet
 					var hidden_facet_names = Configuration.get('loginToSeePrices.hiddenFacetNames', []);
 	
@@ -59,6 +62,18 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigation.View.Ext'
 							return _.indexOf(hidden_facet_names, item.id) >= 0;
 						});
 					}
+
+					//console.log("this.options.appliedFacets", this.options.appliedFacets);
+					_.each(ordered_facets, function(facets) 
+					{
+						_.each(facets.values, function(selected)
+						{
+							if(selected.selected == true)
+							{
+								selected_facets.push(selected.nodeString);
+							}
+						})
+					});
 	
 					return new BackboneCollectionView({
 						childView: FacetsFacetedNavigationItemViewExt
@@ -66,6 +81,7 @@ define('Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigation.View.Ext'
 					,	collection: new Backbone.Collection(ordered_facets)
 					,	childViewOptions: {
 							translator: translator
+						,	selected_facets: selected_facets
 						}
 					});
 				}

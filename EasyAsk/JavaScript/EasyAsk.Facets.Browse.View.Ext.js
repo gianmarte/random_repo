@@ -11,7 +11,9 @@ define('Kodella.EasyAsk.Facets.Browse.View.Ext'
 		, 'Item.Model'
 		, 'GlobalViews.Pagination.View'
 		, 'Kodella.EasyAsk.EasyAsk.Model'
-		, 'Facets.Helper'
+		, 'LiveOrder.Model'
+		, 'Kodella.EasyAsk.Facets.Browse.CategoryHeading.View.Ext'
+		, 'Kodella.EasyAsk.EasyAsk.Facets.FacetedNavigationItemCategory.View.Ext'
 
 		, 'kodella_easyask_easyask.tpl'
 		, 'facets_items_collection.tpl'
@@ -21,6 +23,7 @@ define('Kodella.EasyAsk.Facets.Browse.View.Ext'
 		, 'Utils'
 		, 'Backbone'
 		, 'Backbone.CollectionView'
+		, 'Backbone.CompositeView'
 		, 'jQuery'
 		, 'underscore'
 	]
@@ -36,7 +39,9 @@ define('Kodella.EasyAsk.Facets.Browse.View.Ext'
 		, ItemModel
 		, GlobalViewsPaginationView
 		, EAModel
-		, FacetsHelper
+		, LiveOrderModel
+		, FacetsCategoryHeadingExt
+		, FacetedNavigationItemCategoryViewExt
 
 		, kodella_easyask_easyask_tpl
 		, facets_items_collection_tpl
@@ -46,36 +51,39 @@ define('Kodella.EasyAsk.Facets.Browse.View.Ext'
 		, Utils
 		, Backbone
 		, BackboneCollectionView
+		, BackboneCompositeView
 		, jQuery
 		, _
 	) {
 		'use strict';
-
-		// @class Kodella.SiteSearchExt.SiteSearchExt.View @extends Backbone.View
+		// @class Kodella.EasyAsk.Facets.Browse.View.Ext @extends Backbone.View
 		return FacetsBrowseView.extend({
 
 			template: kodella_easyask_easyask_tpl
 
-			, events: _.extend(FacetsBrowseView.prototype.events, {})
+		, 	events: _.extend(FacetsBrowseView.prototype.events, {})
 
-			, initialize: function (options) {
-				FacetsBrowseView.prototype.initialize.apply(this, arguments);
-
-				this.ea_model = this.options.ea_model;
-				this.ea_info = this.ea_model.source;
+		, 	initialize: function(options) {
+				console.log("options", options);
+				this.ea_model = options.ea_model;
 				this.resultsPerPage = Utils.deepCopy(options.application.getConfig('easyAskConfig.pageSize'));
 				this.fragment = Backbone.history.fragment;
-				//console.log("this.ea_model", this.ea_model);
-				//console.log("this.getPagination()", this.getPagination());
+				this.item_model = options.item_model;
+
+				FacetsBrowseView.prototype.initialize.apply(this,arguments);
+
+				//console.log("this.translator", this.translator);
 			}
 
-			, getEasyAskAttr: function () {
+		, 	getEasyAskAttr: function() 
+			{
 				var facet_arr = [];
 				var facets = this.ea_model.get('facets');
 
-				for (var i = 0; i < facets.length; i++) {
+				for(var i = 0; i < facets.length; i++) 
+				{
 					var facet_obj = {};
-
+					
 					facet_obj.id = facets[i].name;
 					facet_obj.values = facets[i].attributeValueList;
 					facet_obj.isInitDispLimited = facets[i].isInitDispLimited;
@@ -87,142 +95,203 @@ define('Kodella.EasyAsk.Facets.Browse.View.Ext'
 				return facet_arr;
 			}
 
-			, getPagination: function getPagination() {
+		, 	getPagination: function getPagination()
+			{
 				var self = this;
 				this.products = this.ea_model.get('itemDescription');
 
 				return _.extend({}, FacetsBrowseView.prototype.getPagination.apply(this, arguments), {
 					currentPage: self.products.currentPage
-					, pageCount: self.products.pageCount
-					, pageSize: parseInt(self.products.resultsPerPage)
-					, itemCount: self.products.totalItems
+				,	pageCount: self.products.pageCount
+				,	pageSize: parseInt(self.products.resultsPerPage)
+				,	itemCount: self.products.totalItems
 				});
 			}
 
-			, _gotoFacets: function _gotoFacet(e) {
-				var selected_attr = jQuery(e.currentTarget).attr('data-easeopath');
-				var z = new EAModel();
-				var a = this.ea_model.executeBreadcrumbClick(selected_attr);
-				var self = this;
+		,	_gotoFacets: function _gotoFacet(e)
+			{
+				var isSearch = window.location.hash
+				,	self = this
+				,	ea_seopath = jQuery(e.currentTarget).attr('data-easeopath')
+				,	href = window.location.hash ? "#/" + ea_seopath : "/" + ea_seopath
+				,	facet_url = this.ea_model.executeBreadcrumbClick(ea_seopath)
+				,	self = this;
 
-				console.log("e", e);
-				console.log("a", a);
-				this.ea_model.executeCall(a).done(function (data) {
-
-					self.ea_model.set({
-						facets: data.source.attributes.attribute
-						, items: data.source.products.items
-						, itemDescription: data.source.products.itemDescription
-						, stateInfo: data.source.stateInfo
-					});
-					console.log("self.ea_model", self.ea_model);
-					//self.showContent();
-				});
-			}
-
-			, childViews: _.extend(FacetsBrowseView.prototype.childViews,
+				self.ea_model.executeCall(facet_url).done(function(data)
 				{
-					'Facets.FacetedNavigation': function (options) {
-						var self = this;
+					var items = data.source.products ? data.source.products.items : []
+					,   facets = data.source.attributes ? data.source.attributes.attribute : []
+					,   itemDesc = data.source.products ? data.source.products.itemDescription : []
+					,   stateInf = data.source ? data.source.stateInfo : [];
+					
+					self.ea_model.set({
+						facets: facets
+					,   items: items
+					,   itemDescription: itemDesc
+					,   stateInfo: stateInf
+					});
 
-						var exclude = _.map((options.excludeFacets || '').split(','), function (facet_id_to_exclude) {
-							return jQuery.trim(facet_id_to_exclude);
-						})
-							, has_categories = !!(this.category && this.category.categories)
-							, has_items = this.ea_model.get('items').length
-							, has_facets = has_items && this.ea_model.get('facets').length /*has_items && this.model.get('facets').length*/
-							, applied_facets = this.ea_model.get('stateInfo')
-							, has_applied_facets = applied_facets.length
-							, facets = this.getEasyAskAttr();
+					if(isSearch && isSearch.search('keywords') > 0)
+					{
+						var search_href = window.location.hash 
+						? window.location.origin + window.location.pathname + '#search/keywords/'+ea_seopath
+						: '';
 
-						return new FacetsFacetedNavigationViewExt({
-							categoryItemId: this.category && this.category.itemid
-							, clearAllFacetsLink: this.translator.cloneWithoutFacets().getUrl()
-							, hasCategories: has_categories
-							, hasItems: has_items
+						window.history.replaceState("","", search_href);
+						self.showContent();
+						//Backbone.history.navigate(search_href, {trigger: true});
+					}
+					else
+					{
+						Backbone.history.navigate(href, {trigger: true});
+	
+						/*window.history.replaceState("","",href);
+						self.showContent();*/
+					}
+				});
+			}
 
-							// facets box is removed if don't find items
-							, hasFacets: has_facets
+		,	_gotoShow: function(e) 
+			{
+				var plp = this.application.getComponent('PLP');
+				var cur_selection = e.currentTarget.value;
+				//console.log("cur_selection", cur_selection);
 
-							, hasCategoriesAndFacets: has_categories && has_facets
+			}
 
-							// Categories are not a real facet, so lets remove those
-							, appliedFacets: applied_facets
+			, childViews: _.extend(FacetsBrowseView.prototype.childViews, 
+			{
+				'Facets.FacetedNavigation': function(options)
+				{
+					//console.log("this.ea_model", options);
+					var self = this;
+					var facets_length = this.ea_model.get('facets') ? this.ea_model.get('facets').length : 0;
 
-							, hasFacetsOrAppliedFacets: has_facets || has_applied_facets
+					var exclude = _.map((options.excludeFacets || '').split(','), function (facet_id_to_exclude)
+					{
+						return jQuery.trim( facet_id_to_exclude );
+					})
+				,	has_categories = !!(this.category && this.category.categories)
+				,	has_items = this.ea_model.get('items').length
+				,	has_facets =  has_items && facets_length /*has_items && this.model.get('facets').length*/
+				,	applied_facets = this.ea_model.get('stateInfo')
+				,	has_applied_facets = applied_facets.length
+				,	facets = this.getEasyAskAttr();
 
-							//,	translatorUrl: this.translator.getUrl()
-							, translator: this.translator
+				return new FacetsFacetedNavigationViewExt({
+					categoryItemId: this.category && this.category.itemid
+				,	clearAllFacetsLink: this.translator.categoryUrl //this.translator.cloneWithoutFacets().getUrl()
+				,	hasCategories: has_categories
+				,	hasItems: has_items
 
-							//,	translatorConfig: this.options.translatorConfig
-							, facets: facets /*_.filter(this.model.get('facets'), function (facet)
+					// facets box is removed if don't find items
+				,	hasFacets: has_facets
+
+				,	hasCategoriesAndFacets: has_categories && has_facets
+
+					// Categories are not a real facet, so lets remove those
+				,	appliedFacets: applied_facets
+
+				,	hasFacetsOrAppliedFacets: has_facets || has_applied_facets
+
+				//,	translatorUrl: this.translator.getUrl()
+				,	translator: this.translator
+
+				//,	translatorConfig: this.options.translatorConfig
+				,	facets: facets /*_.filter(this.model.get('facets'), function (facet)
 					{
 						return !_.contains(exclude, facet.id);
 					})*/
 
-							, totalProducts: self.ea_model.get('itemDescription').totalItems
-							, keywords: this.translator.getOptionValue('keywords')
-						});
-					}
-					//Extra Facet filter View
-					, 'Facets.FacetedNavigation.Item': function (options) {
-						var facet_config = this.translator.getFacetConfig(options.facetId)
-							, contructor_options = {
-								model: this.ea_model.get('facets')
-								, translator: this.translator
-							};
+				,	totalProducts: self.ea_model.get('itemDescription').totalItems
+				,	keywords: this.translator.getOptionValue('keywords')
+				});
+				}
+				//Extra Facet filter View
+			,	'Facets.FacetedNavigation.Item': function (options)
+				{
+					//console.log("facet browse", options);
+					var facet_config = this.translator.getFacetConfig(options.facetId)
+					,	contructor_options = {
+							model: new Backbone.Model(this.ea_model.get('facets'))
+						,	translator: this.translator
+						,	stateInfo: this.ea_model.get('stateInfo')
+						};
 
-						if (facet_config.template) {
-							contructor_options.template = facet_config.template;
+					if (facet_config.template)
+					{
+						contructor_options.template = facet_config.template;
+					}
+
+					return new FacetsFacetedNavigationItemViewExt(contructor_options);
+				}
+
+			,	'Facets.Items': function()
+				{
+					var self = this
+					,	display_option = _.find(this.itemsDisplayOptions, function (option)
+						{
+							return option.id === self.options.translator.getOptionValue('display');
+						});
+	
+					return new BackboneCollectionView({
+						childTemplate: display_option.template
+					,	childView: FacetsItemCellViewExt
+					,	childViewOptions: {
+							application: this.application
 						}
+					,	viewsPerRow: parseInt(display_option.columns, 10)
+					,	collection: this.ea_model.get('items')
+					,	cellTemplate: facets_items_collection_view_cell_tpl
+					,	rowTemplate: facets_items_collection_view_row_tpl
+					,	template: facets_items_collection_tpl
+					,	context: {
+							keywords: this.translator.getOptionValue('keywords')
+						}
+					});
+				}
 
-						return new FacetsFacetedNavigationItemViewExt(contructor_options);
-					}
+			,	'Facets.ItemListShowSelector': function()
+				{
+					return new FacetsItemListShowSelectorViewExt({
+						options: this.resultsPerPage
+					,	translator: this.translator
+					});
+				}
 
-					, 'Facets.Items': function () {
-						var test = this.ea_model.get('items');
-						var self = this
-							, display_option = _.find(this.itemsDisplayOptions, function (option) {
-								return option.id === self.options.translator.getOptionValue('display');
-							});
+			,	'GlobalViews.Pagination': function()
+				{
+					var self = this;
+					this.products = this.ea_model.get('itemDescription') ? this.ea_model.get('itemDescription') : [];
 
-						return new BackboneCollectionView({
-							childTemplate: display_option.template
-							, childView: FacetsItemCellViewExt
-							, childViewOptions: {
-								application: this.application
-							}
-							, viewsPerRow: parseInt(display_option.columns, 10)
-							, collection: this.ea_model.get('items')
-							, cellTemplate: facets_items_collection_view_cell_tpl
-							, rowTemplate: facets_items_collection_view_row_tpl
-							, template: facets_items_collection_tpl
-							, context: {
-								keywords: this.translator.getOptionValue('keywords')
-							}
-						});
-					}
+					return new GlobalViewsPaginationView(_.extend({
+						currentPage: self.products.currentPage
+					,	totalPages: self.products.pageCount
+					}));
+				}
 
-					, 'Facets.ItemListShowSelector': function () {
-						return new FacetsItemListShowSelectorViewExt({
-							options: this.resultsPerPage
-						});
-					}
+			,	'Facets.CategorySidebar': function()
+				{
+					return new FacetedNavigationItemCategoryViewExt({
+						model: this.model.get('category')
+					,	categoryUrl: this.translator.getCategoryUrl()
+					});
+				}
+			/*,	'Facets.Browse.CategoryHeading': function()
+				{
+					return new FacetsCategoryHeadingExt({
+						model: this.model.get('category')
+					,	showDescription: this.translator.cloneWithoutFacetId('category').getAllFacets().length === 0
+					,	ea_model: this.ea_model
+					,	translator: this.translator
+					});
+				}*/
+			})
 
-					, 'GlobalViews.Pagination': function () {
-						var self = this;
-						this.products = this.ea_model.get('itemDescription');
-
-						return new GlobalViewsPaginationView(_.extend({
-							currentPage: self.products.currentPage
-							, totalPages: self.products.pageCount
-						}));
-					}
-				})
-
-			, getContext: function () {
+			, getContext: function () 
+			{
 				var self = this;
-				//console.log("self.ea_info", self.ea_info);
+
 				return _.extend({}, FacetsBrowseView.prototype.getContext.apply(this, arguments), {
 					total: self.ea_model.get('itemDescription').totalItems
 				});

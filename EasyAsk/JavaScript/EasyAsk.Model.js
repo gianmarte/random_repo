@@ -20,12 +20,25 @@ define('Kodella.EasyAsk.EasyAsk.Model'
         ) {
         'use strict';
 
-        $.getPageSize = function () {
+        $.urlParam = function(name, href) {
+            var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(href || window.location.href);
+
+            if(results==null)
+            {
+                return null;
+            }
+            else
+            {
+                return results[1];
+            }
+        }
+
+        $.getPageSize = function() {
             var pageSizes = Configuration.get('easyAskConfig.pageSize');
             var defaultSize = 0;
 
-            for (var idx = 0; idx < pageSizes.length; idx++) {
-                if (pageSizes[idx].isDefault) {
+            for(var idx = 0; idx < pageSizes.length; idx++) {
+                if(pageSizes[idx].isDefault) {
                     defaultSize = pageSizes[idx].items;
                 }
             }
@@ -105,15 +118,21 @@ define('Kodella.EasyAsk.EasyAsk.Model'
             }
 
             , formURL: function () {
-                this.baseURL = this.defaults.server + '/EasyAsk/apps/Advisor.jsp?indexed=1&ie=UTF-8&rootprods=1&disp=json&dct=' + this.defaults.dct;
+                this.baseURL = this.defaults.server + '/EasyAsk/apps/Advisor.jsp?indexed=1&ie=UTF-8&disp=json&dct=' + this.defaults.dct;
                 console.log("this.baseURL", this.baseURL);
-                return this.baseURL + '&ResultsPerPage=' + this.currentPageSize + '&defsortcols=' + (this.currentSort == '-default-' ? '' : this.currentSort);
+                return this.baseURL + '&ResultsPerPage=' + this.setPageSize() + '&defsortcols=' + (this.currentSort == '-default-' ? '' : this.currentSort);
             }
 
-            , doAttributeClick: function (seoPath) {
-                this.executeBreadcrumbClick(seoPath);
-                return;
+            , setPageSize: function(val) {
+                var page_size = val ? val : this.currentPageSize;
+
+                return page_size;
             }
+
+            , doAttributeClick: function(seoPath){
+				this.executeBreadcrumbClick(seoPath);
+				return;
+			}
 
             , executeSearch: function (q, path) {
                 this.path = path || '';
@@ -123,11 +142,13 @@ define('Kodella.EasyAsk.EasyAsk.Model'
             }
 
             , executeAttribute: function (attr, val, path) {
-                var url = this.formURL() + '&RequestAction=advisor&RequestData=CA_AttributeSelected&CatPath=' + encodeURIComponent(path || this.path) + '&AttribSel=' + encodeURIComponent(attr + " = '" + val + "'");
+                console.log("path || this.path", path || this.path);
+                var url = this.formURL() + '&RequestAction=advisor&RequestData=CA_AttributeSelected&CatPath=' + encodeURIComponent(path || this.path) + '&AttribSel=' + encodeURIComponent(attr + ":" + val + "");
+                return url;
                 this.invoke(url);
             }
 
-            , executeRageAttr: function (attr, val, node) {
+            , executeRangeAttr: function (attr, val, node) {
                 if (node) {
                     this.executeSEORangeAttr(attr, val, node);
                 }
@@ -150,6 +171,7 @@ define('Kodella.EasyAsk.EasyAsk.Model'
 
             , executeMVAttribute: function (vals, path) {
                 var url = this.formURL() + '&RequestAction=advisor&RequestData=CA_AttributeSelected&CatPath=' + encodeURIComponent(path || this.path) + '&AttribSel=' + encodeURIComponent(vals);
+                
                 this.invoke(url);
             }
 
@@ -375,6 +397,7 @@ define('Kodella.EasyAsk.EasyAsk.Model'
             }
 
             , invoke: function (url) {
+                //console.log("here invoke", url);
                 var path = $.urlParam('CatPath', url);
 
                 if (!path) {
@@ -404,6 +427,7 @@ define('Kodella.EasyAsk.EasyAsk.Model'
 
                 //history.pushState(url,null,href + '?dct=' + this.defaults.dct + (path?'&ea_path=' + path:''));
                 window.console && console.log("invoke: " + url);
+                //return url;
                 this.executeCall(url);
             }
 
@@ -412,31 +436,32 @@ define('Kodella.EasyAsk.EasyAsk.Model'
             }
 
 
-            , getImgURL: function (item) {
-
+            , getImgURL: function(item) {
+               
                 var item_model = new ItemModel();
-                var items = item.source.products.items;
+                var items = item.source.products ? item.source.products.items : [];
                 var self = this;
 
-                for (var idx = 0; idx < items.length; idx++) {
+                for(var idx = 0; idx < items.length; idx++)
+                {
                     item_model.fetch({
-                        data: { id: items[idx].Product_Id }
+                        data: {id: items[idx].Product_Id}
                     })
-                        .done(function (data) {
-                            self.addImgURL(data.items, item);
-                        });
+                    .done(function(data) {
+                        self.addImgURL(data.items, item);
+                    });
                 }
             }
 
-            , addImgURL: function (img, item) {
+            , addImgURL: function(img, item) {
                 var ea_item = item.source.products.items;
 
-                for (var idx = 0; idx < ea_item.length; idx++) {
-                    if (img[0].internalid == ea_item[idx].Product_Id) {
+                for(var idx = 0; idx < ea_item.length; idx++) {
+                    if(img[0].internalid == ea_item[idx].Product_Id) {
                         //console.log("ids", img[0].internalid + ", " + ea_item[idx].Product_Id);
                         ea_item[idx].Image_1_URL = {
                             url: img[0].itemimages_detail.urls[0].url
-                            , altimagetext: ""
+                        ,   altimagetext: ""
                         };
 
                         ea_item[idx].Item_URL = `/${img[0].urlcomponent}`;
